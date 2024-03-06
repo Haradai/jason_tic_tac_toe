@@ -56,6 +56,11 @@ isCell(X,Y) :- isCoordinate(X) & isCoordinate(Y).
 available(X,Y) :- isCell(X,Y) & not mark(X,Y,_).
 
 
+isCenter(X,Y) :- X = 1 & Y = 1.
+isCorner(X,Y) :- (X=0 ; X=2) & (Y=0 ; Y=2).
+isEdge(X,Y) :- ~isCorner(X,Y) & ~isCenter(X,Y).
+
+
 started.
 
 
