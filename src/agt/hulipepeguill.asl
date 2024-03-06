@@ -56,10 +56,12 @@ isCell(X,Y) :- isCoordinate(X) & isCoordinate(Y).
 available(X,Y) :- isCell(X,Y) & not mark(X,Y,_).
 
 
+/* Cell Types */
 isCenter(X,Y) :- X = 1 & Y = 1.
-isCorner(X,Y) :- (X=0 ; X=2) & (Y=0 ; Y=2).
+isCorner(X,Y) :- (X=0 | X=2) & (Y=0 | Y=2).
 isEdge(X,Y) :- ~isCorner(X,Y) & ~isCenter(X,Y).
 
+/* */
 
 started.
 
@@ -76,13 +78,23 @@ started.
 	- pick the N-th cell of the list, and store its coordinates in the variables A and B.
 	- mark that cell by performing the action play(A,B).
 */
-+round(Z) : next <- .findall(available(X,Y),available(X,Y),AvailableCells);
++round(Z) : next <- .findall(available(X,Y),available(X,Y), AvailableCells);
 						L = .length(AvailableCells);
-						N = math.floor(math.random(L));
-						.nth(N,AvailableCells,available(A,B));
-						 play(A,B).
 
-						 
+						if(L == 9){play(1,1)}
+
+						else{
+							
+							if (L == 8 & available(1,1)) {play(1,1)}
+
+							else{
+
+							N = math.floor(math.random(L));
+					 		.nth(N,AvailableCells,available(A,B));
+					  		play(A,B)}
+							
+							}.				
+	   					 
 						 
 /* If I am the winner, then print "I won!"  */
 +winner(S) : symbol(S) <- .print("I won!").
