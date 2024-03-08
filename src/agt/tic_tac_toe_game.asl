@@ -81,66 +81,21 @@ started.
 +round(Z) : next <- .findall(available(X,Y),available(X,Y), AvailableCells);
 						L = .length(AvailableCells);
 
-						//som primers (primer torn)
-						if(L == 9){
-							play(1,1);
-							.print("som primers (primer torn)")
-							}
+						if(L == 9){play(1,1)}
+
 						else{
-							//som segons (primer torn)
-							if (L == 8){
-								.print("som segons (primer torn)");
-								if(available(1,1)) {
-									play(1,1)
-								}
-								else{
-									play(0,0)
-								}
-							};
-
-						//som primers (segon torn)
-						if (L==7) {
-							.print("som primers (segon torn)");
-
-							//on esta la fitxa de l'altre
-							.findall(mark(X,Y,o),mark(X,Y,o), Marked);
-							.nth(N,Marked,mark(A,B,o));
-							.print("La fitxa del altre esta a:");
-							.print(A);
-							.print(B);
-
-							//Si l'altre juga diagonal busquem contraria
-							if ((A==0 , A==2) & (B==0 , B==2)) {
-								if (A==0) {A=2}
-								else {A=0}
-								if (B==0) {B=2}
-								else {B=0}
-								.print("La diagonal contraria és:");
-								.print(A);
-								.print(B);
-								play(A,B)
-								}
-
-							//Si l'altre juga edge, busquem diagonal contraria
-							else {
-								.findall(available(X,Y),available(X,Y),AvailableCells);
-								L = .length(AvailableCells);
-								N = math.floor(math.random(L));
-								.nth(N,AvailableCells,available(A,B));
-								play(A,B)
-
-								}					
-						}
-
-						.findall(available(X,Y),available(X,Y),AvailableCells);
-						L = .length(AvailableCells);
-						N = math.floor(math.random(L));
-						.nth(N,AvailableCells,available(A,B));
-						play(A,B)	
-								
 							
-							}.
-						
+							if (L == 8 & available(1,1)) {play(1,1)}
+
+							else{
+								.findall(available(X,Y),isCorner(X,Y), AvailableCells);
+				
+
+							N = math.floor(math.random(L));
+					 		.nth(N,AvailableCells,available(A,B));
+					  		play(A,B)}
+							
+							}.				
 	   					 
 						 
 /* If I am the winner, then print "I won!"  */
