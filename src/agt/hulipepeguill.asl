@@ -81,64 +81,77 @@ started.
 +round(Z) : next <- .findall(available(X,Y),available(X,Y), AvailableCells);
 						L = .length(AvailableCells);
 
-						//som primers (primer torn)
+						//FIRST ROUND
+
+						// If we start, play center.
 						if(L == 9){
 							play(1,1);
-							.print("som primers (primer torn)")
-							}
-						else{
-							//som segons (primer torn)
-							if (L == 8){
-								.print("som segons (primer torn)");
-								if(available(1,1)) {
-									play(1,1)
-								}
-								else{
-									play(0,0)
-								}
+							.print("First round, hulipepeguill starts.")
 							};
 
-						//som primers (segon torn)
+						// If center is available, we play it. Otherwise, we choose corner.
+						if (L == 8){
+							.print("First round, the oponent starts.");
+							if(available(1,1)) {
+								play(1,1)
+							}
+							else{
+								play(0,0)
+							}
+						};
+
+						// SECOND ROUND
+
 						if (L==7) {
-							//on esta la fitxa de l'altre
+							
+							// Check which position was marked.
 							.findall(mark(X,Y,o),mark(X,Y,o), Marked);
 							.nth(N,Marked,mark(A,B,o));
 							.print("La fitxa del altre esta a:");
 							.print(A);
 							.print(B);
 
-							//Si l'altre juga diagonal busquem contraria
+							// If they mark a corner, place your next mark on the opposite corner.
 							if ((A==0 | A==2) & (B==0 | B==2)) {
 								if (A==0) {A=2}
 								else {A=0}
 								if (B==0) {B=2}
 								else {B=0}
+
 								.print("La diagonal contraria és:");
 								.print(A);
 								.print(B);
+
 								play(A,B)
+
 								}
 
-							//Sil'altre juga edge, busquem diagonal contraria
+							// If they mark an edge, one of the two corners furthest from the edge piece.
 							else {
-								.findall(available(X,Y),available(X,Y),AvailableCells);
-								L = .length(AvailableCells);
+
+								if ((A==1) & (B==0) & available(2,2)) {play(2,2)}
+								if ((A==2) & (B==1) & available(0,2)) {play(0,2)}
+								if ((A==1) & (B==2) & available(0,0)) {play(0,0)}
+								if ((A==0) & (B==1) & available(2,0)) {play(2,0)}
+								
+								else{
 								N = math.floor(math.random(L));
 								.nth(N,AvailableCells,available(A,B));
 								play(A,B)
 
-								}					
-						}
+								}
 
-						.findall(available(X,Y),available(X,Y),AvailableCells);
-						L = .length(AvailableCells);
-						N = math.floor(math.random(L));
-						.nth(N,AvailableCells,available(A,B));
-						play(A,B)	
-								
-							
-							}.
-							
+								}			
+						};
+
+						if (L \== 7 & L \== 9) {
+
+							.print("Problemss");
+							N = math.floor(math.random(L));
+								.nth(N,AvailableCells,available(A,B));
+								play(A,B)
+						}.
+					
 												 
 /* If I am the winner, then print "I won!"  */
 +winner(S) : symbol(S) <- .print("I won!").
