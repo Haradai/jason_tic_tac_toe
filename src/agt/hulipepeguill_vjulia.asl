@@ -79,8 +79,8 @@ started.
 
 					/* Create lists to alocate the cells corresponding to each agent. */					
 
-					.findall(mark(X,Y,OC),mark(X,Y, OC), OponentCells);  /* Find Oponent Cells*/
-					.findall(mark(X,Y,AC),mark(X,Y,AC), AgentCells);  /* Find Our Cells*/
+					/* .findall(mark(X,Y,OC),mark(X,Y, OC), OponentCells);  Find Oponent Cells*/
+					/* .findall(mark(X,Y,AC),mark(X,Y,AC), AgentCells);  Find Our Cells*/
 
 					/* We want to occupy the center of the greed, so we try it. */
 
@@ -106,45 +106,55 @@ started.
 
 					/* Horizontal and Vertical */			
 					if ((mark(A,B, AC) & mark(A,C,AC) & available(A,X) & B\==C) | (mark(B,X,AC) & mark(C,X,AC) & available(A,X) & B\==C) ) {
-						
-						.print(AC);
-						.print(OponentCells);
-						.print(AgentCells);
-						.print(A, X);
 						play(A, X)
 					}
 
-					/* Horizontal and Vertical */	
-
+					/* Diagonal */	
 					else {
 						
 						if ((mark(A,A, AC) & mark(B,B,AC) & available(C,C) & A\==B)) {
-							.print(C,C);
 							play(C,C)
-
 						}
-						
 						else {
-
 							if (mark(A, C, AC) & mark(B, B, AC) & available(C, A) & A\==B){
-
-								.print(C, A);
 								play(C, A)
 							}
 							 
 							else {
 
-								.print("Playing random!");
-								L = .length(AvailableCells);
-								N = math.floor(math.random(L));
-								.nth(N,AvailableCells,available(A,B));
-								play(A,B)
+								if ((mark(A,B, 	OC) & mark(A,C,OC) & available(A,X) & B\==C) | (mark(B,X,OC) & mark(C,X,OC) & available(A,X) & B\==C) ) {
+									play(A, X)
+								}
 
-							}
+								/* Diagonal */	
+								else {		
+						
+									if ((mark(A,A, OC) & mark(B,B,OC) & available(C,C) & A\==B)) {
+										play(C,C)
+									}
+
+									else {
+										if (mark(A, C, OC) & mark(B, B, OC) & available(C, A) & A\==B){
+											play(C, A)
+										}
+										else {
+
+											.print("Playing random!");
+											L = .length(AvailableCells);
+											N = math.floor(math.random(L));
+											.nth(N,AvailableCells,available(A,B));
+											play(A,B)
+
+										}
+
+										}
 			
-						}
+									}
+								}			
+							}				
 
-					}}.
+						}
+					}.
 
 						 
 /* If I am the winner, then print "I won!"  */
