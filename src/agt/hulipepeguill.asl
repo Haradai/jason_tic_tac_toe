@@ -78,11 +78,12 @@ started.
 	- pick the N-th cell of the list, and store its coordinates in the variables A and B.
 	- mark that cell by performing the action play(A,B).
 */
+
 +round(Z) : next <- .findall(available(X,Y),available(X,Y), AvailableCells);
 						L = .length(AvailableCells);
 
 						//FIRST ROUND
-
+ 
 						// If we start, play center.
 						if(L == 9){
 							play(1,1);
@@ -116,7 +117,7 @@ started.
 								if (A==0) {A=2}
 								else {A=0}
 								if (B==0) {B=2}
-								else {B=0}
+								else {B=0} 
 
 								.print("La diagonal contraria és:");
 								.print(A);
@@ -124,7 +125,7 @@ started.
 
 								play(A,B)
 
-								}
+								} 
 
 							// If they mark an edge, one of the two corners furthest from the edge piece.
 							else {
