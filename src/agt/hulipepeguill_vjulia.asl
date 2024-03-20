@@ -64,97 +64,115 @@ started.
 /* When the agent is started, perform the 'sayHello' action. */
 +started <- sayHello.
 
-/* Whenever it is my turn, play a random move. Specifically:
-	- find all available cells and put them in a list called AvailableCells.
-	- Get the length L of that list.
-	- pick a random integer N between 0 and L.
-	- pick the N-th cell of the list, and store its coordinates in the variables A and B.
-	- mark that cell by performing the action play(A,B).
-*/
-+round(Z) : next <- .findall(available(X,Y),available(X,Y),AvailableCells); /* Find Available Cells */
+/* Round Planning */
+
++round(Z) : next <- .findall(available(X,Y),available(X,Y),AvailableCells);
 					L = .length(AvailableCells);
 
-					if (symbol(x)){AC=x; OC=o}
-					else {AC=o; OC=x};
+					/* To adhere to the strategy effectively, it's crucial to identify 
+					the symbol assigned to our agent in order to determine availability for
+					potential moves and to locate the opposing symbol.
+					
+					AC -> Agent Symbol
+					OC -> Oponent Symbol
+					
+					*/
 
-					/* Create lists to alocate the cells corresponding to each agent. */					
+					if (symbol(x)){AC=x; OC=o} else {AC=o; OC=x};
 
-					/* .findall(mark(X,Y,OC),mark(X,Y, OC), OponentCells);  Find Oponent Cells*/
-					/* .findall(mark(X,Y,AC),mark(X,Y,AC), AgentCells);  Find Our Cells*/
 
-					/* We want to occupy the center of the greed, so we try it. */
+					/* Depending on the round, we will employ different strategies.
+					
+					We utilize the length of available cells (L) to determine the 
+					current stage of the game. */
 
-					if(L == 9){
-						play(1,1);
-						.print("Center is ours!")
-					};
+					if(L == 9){!firstmove};	
+					if (L == 8){!secondmove};
+					if (L < 8){!winningopportunity(AvailableCells, L, AC, OC)}.		
+
+
+/* First Moves Strategy
+
+In the first stage of the game, we will prioritize the center cell as it provides
+the most opportunities for future moves.
+*/
+
++!firstmove <- play(1,1); .print("Center is ours!").
+
++!secondmove <- if(available(1,1)) {play(1,1); .print("Center is ours!")}
+				else{play(0,0); .print("I'll take the corner!")}.
+
+/* Winning Opportunity Function
+
+This function is called when the agent may have an opportunity to win the game.
+It will prioritize the winning move over any other potential move. If no winning 
+opportunity is found, the function will call the blockingopportunity function.
+
+*/
+
++!winningopportunity(AvailableCells, L, AC, OC) <- 
+
+							/* Horizontal and Vertical */			
+							if ((mark(A,B, AC) & mark(A,C,AC) & available(A,X) & B\==C) | (mark(B,X,AC) & mark(C,X,AC) & available(A,X) & B\==C) ) {
+								play(A, X);
+								.print("I found a way to win!")}
 							
-					if (L == 8){
-
-						if(available(1,1)) {
-							play(1,1);
-							.print("Center is ours!")
-						}
-						else{
-							play(0,0);
-							}
-						};
-
-					if (L<8){
-		
-					/* Prioritize blocking the opponent from winning and look for winning oportunities. */	
-
-					/* Horizontal and Vertical */			
-					if ((mark(A,B, AC) & mark(A,C,AC) & available(A,X) & B\==C) | (mark(B,X,AC) & mark(C,X,AC) & available(A,X) & B\==C) ) {
-						play(A, X)
-					}
-
-					/* Diagonal */	
-					else {
-						
-						if ((mark(A,A, AC) & mark(B,B,AC) & available(C,C) & A\==B)) {
-							play(C,C)
-						}
-						else {
-							if (mark(A, C, AC) & mark(B, B, AC) & available(C, A) & A\==B){
-								play(C, A)
-							}
-							 
+							/* Diagonal */	
 							else {
+								if ((mark(A,A, AC) & mark(B,B,AC) & available(C,C) & A\==B)) {
+								play(C,C);
+								.print("I found a way to win!")}
+								
+								else{
+									if (mark(A, C, AC) & mark(B, B, AC) & available(C, A) & (A==0 & C==2 | A==2 & C==0)){
+										play(C, A);
+										.print("I found a way to win!")
+									}
+									else{!blockingopportunity(AvailableCells, L, OC)}
+								}}.
 
-								if ((mark(A,B, 	OC) & mark(A,C,OC) & available(A,X) & B\==C) | (mark(B,X,OC) & mark(C,X,OC) & available(A,X) & B\==C) ) {
-									play(A, X)
+
+/* Blocking Opportunity Function
+
+This function is called when the agent may have an opportunity to block the opponent from winning the game.
+It will prioritize the blocking move over any other potential move. If no blocking	
+opportunity is found, the function will call the playrandom function.
+
+*/
+
++!blockingopportunity(AvailableCells, L, OC) <- if ((mark(A,B,OC) & mark(A,C,OC) & available(A,X) & B\==C) | (mark(B,X,OC) & mark(C,X,OC) & available(A,X) & B\==C) ) {
+									play(A, X);
+									.print("I blocked your opportunity!")
 								}
 
-								/* Diagonal */	
-								else {		
-						
+							else {		
 									if ((mark(A,A, OC) & mark(B,B,OC) & available(C,C) & A\==B)) {
-										play(C,C)
+										play(C,C);
+										.print("I blocked your opportunity!")
 									}
 
 									else {
-										if (mark(A, C, OC) & mark(B, B, OC) & available(C, A) & A\==B){
-											play(C, A)
-										}
-										else {
 
-											.print("Playing random!");
-											L = .length(AvailableCells);
-											N = math.floor(math.random(L));
-											.nth(N,AvailableCells,available(A,B));
-											play(A,B)
+										if (mark(A, C, OC) & mark(B, B, OC) & available(C, A) & (A==0 & C==2 | A==2 & C==0)){
+											play(C, A);
+											.print("I blocked your opportunity!")}
 
+										else{!playrandom(AvailableCells, L)}
 										}
 
-										}
-			
-									}
-								}			
-							}				
+									}.
 
-						}
-					}.
+/* Random Cell Selection Function 
+
+In certain situations, we may opt to deviate from a rigid strategy 
+and instead embrace the element of chance.
+
+*/
+
++!playrandom(AvailableCells, L) <- .print("Random move!");
+									N = math.floor(math.random(L));
+									.nth(N,AvailableCells,available(A,B));
+									play(A,B).
 
 						 
 /* If I am the winner, then print "I won!"  */
